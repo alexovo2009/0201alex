@@ -1,0 +1,245 @@
+/* 茶言觀色 - 客戶流失風險評估器 樣式表 */
+/* 自定義滾動條樣式 */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+    transition: background 0.3s;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #aaa;
+}
+
+/* 深色模式滾動條 */
+.dark .custom-scrollbar::-webkit-scrollbar-track {
+    background: #243B33;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #4E9A85;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #3d7a69;
+}
+
+/* 平滑過渡效果 */
+* {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* 風險儀表板動畫 */
+@keyframes pulse-risk {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.risk-pulse {
+    animation: pulse-risk 2s infinite;
+}
+
+/* 表單輸入焦點效果增強 */
+input:focus, select:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(46, 92, 78, 0.15);
+}
+
+.dark input:focus, .dark select:focus {
+    box-shadow: 0 4px 12px rgba(78, 154, 133, 0.25);
+}
+
+/* 按鈕懸停效果 */
+button {
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* 卡片懸停效果 */
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.dark .hover-lift:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* 行動建議卡片效果 */
+.action-card {
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.action-card:hover {
+    transform: translateX(4px);
+    backdrop-filter: blur(12px);
+}
+
+/* 風險因子卡片 */
+.risk-factor-card {
+    transition: all 0.3s ease;
+}
+
+.risk-factor-card:hover {
+    transform: scale(1.02);
+}
+
+/* 響應式設計調整 */
+@media (max-width: 768px) {
+    .mobile-stack {
+        flex-direction: column !important;
+    }
+    
+    .mobile-full-width {
+        width: 100% !important;
+    }
+    
+    .mobile-padding {
+        padding: 1rem !important;
+    }
+}
+
+/* 列印樣式 */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    body {
+        background: white !important;
+        color: black !important;
+    }
+    
+    .bg-card-light, .bg-card-dark {
+        background: white !important;
+        border: 1px solid #ddd !important;
+    }
+}
+
+/* 載入動畫 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+/* 主題切換按鈕動畫 */
+#theme-toggle {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#theme-toggle:hover {
+    transform: rotate(15deg) scale(1.1);
+}
+
+/* 風險分數動畫 */
+@keyframes scoreUpdate {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.score-update {
+    animation: scoreUpdate 0.5s ease;
+}
+
+/* 進度條動畫 */
+@keyframes progressFill {
+    from {
+        stroke-dashoffset: 283;
+    }
+}
+
+.progress-animate {
+    animation: progressFill 1.5s ease-out forwards;
+}
+
+/* 工具提示 */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: #2e5c4e;
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dark .tooltip .tooltip-text {
+    background-color: #4E9A85;
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* 表單驗證樣式 */
+input:invalid, select:invalid {
+    border-color: #ef4444 !important;
+}
+
+.validation-error {
+    color: #ef4444;
+    font-size: 12px;
+    margin-top: 4px;
+    display: none;
+}
+
+input:invalid + .validation-error,
+select:invalid + .validation-error {
+    display: block;
+}
