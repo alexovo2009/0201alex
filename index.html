@@ -66,8 +66,12 @@
         }
     </script>
     <link rel="stylesheet" href="css/styles.css">
+    <!-- Chart.js 圖表庫 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/theme.js" defer></script>
     <script src="js/dashboard.js" defer></script>
+    <script src="js/history.js" defer></script>
+    <script src="js/charts.js" defer></script>
 </head>
 <body class="bg-background-light text-text-primary-light font-display min-h-screen flex flex-col transition-colors duration-300 dark:bg-background-dark dark:text-text-primary-dark">
     <!-- 主題切換按鈕 (固定在右上角) -->
@@ -88,9 +92,10 @@
                 <h2 class="text-xl font-bold tracking-tight">茶言觀色</h2>
             </div>
             <nav class="hidden md:flex items-center gap-8">
-                <a class="text-sm font-bold text-primary-light hover:text-primary-dark border-b-2 border-primary-light py-5 transition-colors dark:text-primary-light dark:hover:text-primary-light dark:border-primary-light" href="#">儀表板</a>
-                <a class="text-sm font-medium text-text-secondary-light hover:text-primary-light py-5 border-b-2 border-transparent hover:border-primary-light/30 transition-all dark:text-text-secondary-dark dark:hover:text-primary-light" href="#">歷史紀錄</a>
-                <a class="text-sm font-medium text-text-secondary-light hover:text-primary-light py-5 border-b-2 border-transparent hover:border-primary-light/30 transition-all dark:text-text-secondary-dark dark:hover:text-primary-light" href="#">設定</a>
+                <a id="nav-dashboard" class="text-sm font-bold text-primary-light hover:text-primary-dark border-b-2 border-primary-light py-5 transition-colors dark:text-primary-light dark:hover:text-primary-light dark:border-primary-light nav-link active" href="#" data-page="dashboard">儀表板</a>
+                <a id="nav-history" class="text-sm font-medium text-text-secondary-light hover:text-primary-light py-5 border-b-2 border-transparent hover:border-primary-light/30 transition-all dark:text-text-secondary-dark dark:hover:text-primary-light nav-link" href="#" data-page="history">歷史紀錄</a>
+                <a id="nav-charts" class="text-sm font-medium text-text-secondary-light hover:text-primary-light py-5 border-b-2 border-transparent hover:border-primary-light/30 transition-all dark:text-text-secondary-dark dark:hover:text-primary-light nav-link" href="#" data-page="charts">圖表分析</a>
+                <a id="nav-settings" class="text-sm font-medium text-text-secondary-light hover:text-primary-light py-5 border-b-2 border-transparent hover:border-primary-light/30 transition-all dark:text-text-secondary-dark dark:hover:text-primary-light nav-link" href="#" data-page="settings">設定</a>
             </nav>
             <div class="flex items-center gap-4">
                 <button class="relative p-2 text-text-secondary-light hover:text-primary-light transition-colors bg-slate-50 rounded-full hover:bg-primary-light/5 dark:text-text-secondary-dark dark:hover:text-primary-light dark:bg-card-dark">
@@ -110,9 +115,11 @@
     </header>
 
     <main class="flex-1 bg-background-light p-6 lg:p-10 transition-colors duration-300 dark:bg-background-dark">
-        <div class="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <!-- 左側表單區域 -->
-            <div class="lg:col-span-7 xl:col-span-8 flex flex-col gap-6">
+        <!-- 儀表板頁面 (預設顯示) -->
+        <div id="page-dashboard" class="page-content">
+            <div class="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- 左側表單區域 -->
+                <div class="lg:col-span-7 xl:col-span-8 flex flex-col gap-6">
                 <div class="bg-card-light rounded-xl p-6 shadow-sm border border-border-light transition-colors duration-300 dark:bg-card-dark dark:border-border-dark">
                     <div class="flex items-start justify-between flex-wrap gap-4">
                         <div>
@@ -354,6 +361,250 @@
                         <button class="mt-8 w-full bg-white text-primary-light font-bold py-3.5 rounded-lg hover:bg-slate-50 transition-all shadow-md active:translate-y-0.5 dark:py-3 dark:hover:bg-slate-100">
                             應用所有操作
                         </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 歷史記錄頁面 (預設隱藏) -->
+        <div id="page-history" class="page-content hidden">
+            <div class="max-w-[1400px] mx-auto">
+                <div class="bg-card-light rounded-xl p-6 shadow-sm border border-border-light transition-colors duration-300 dark:bg-card-dark dark:border-border-dark mb-8">
+                    <div class="flex items-start justify-between flex-wrap gap-4">
+                        <div>
+                            <h1 class="text-2xl font-bold text-primary-light dark:text-primary-light mb-2">歷史記錄</h1>
+                            <p class="text-text-secondary-light dark:text-text-secondary-dark">查看過往的客戶流失風險評估記錄與分析結果。</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button id="clear-all-history" class="flex items-center gap-2 text-red-600 font-medium text-sm bg-red-50 px-4 py-2 rounded-lg hover:bg-red-100 transition-colors border border-red-200 dark:text-red-400 dark:bg-red-900/30 dark:border-red-800/50">
+                                <span class="material-symbols-outlined text-[20px]">delete_forever</span>
+                                清除全部
+                            </button>
+                            <button id="export-history" class="flex items-center gap-2 text-primary-light font-medium text-sm bg-primary-light/5 px-4 py-2 rounded-lg hover:bg-primary-light/10 transition-colors border border-primary-light/10 dark:text-primary-light dark:bg-primary-light/10 dark:border-primary-light/20 dark:hover:bg-primary-light/20">
+                                <span class="material-symbols-outlined text-[20px]">download</span>
+                                匯出記錄
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 搜尋與篩選 -->
+                <div class="bg-card-light rounded-xl p-6 shadow-sm border border-border-light transition-colors duration-300 dark:bg-card-dark dark:border-border-dark mb-8">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm font-bold text-text-primary-light dark:text-text-primary-dark">搜尋客戶</label>
+                            <div class="relative">
+                                <input type="text" id="history-search" class="w-full h-11 px-4 pl-10 rounded-lg border border-border-light bg-card-light focus:bg-white focus:border-primary-light focus:ring-1 focus:ring-primary-light outline-none transition-all placeholder:text-text-muted-light shadow-sm dark:border-border-dark dark:bg-[#1E322C] dark:text-white dark:placeholder:text-text-muted-dark dark:focus:bg-[#1A2E28] dark:focus:border-primary-light dark:focus:ring-primary-light" placeholder="輸入客戶名稱或ID...">
+                                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted-light dark:text-text-muted-dark text-sm">search</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm font-bold text-text-primary-light dark:text-text-primary-dark">風險等級</label>
+                            <div class="relative">
+                                <select id="history-risk-filter" class="w-full h-11 px-4 rounded-lg border border-border-light bg-card-light focus:bg-white focus:border-primary-light focus:ring-1 focus:ring-primary-light outline-none appearance-none transition-all shadow-sm text-text-primary-light dark:border-border-dark dark:bg-[#1E322C] dark:text-white dark:focus:bg-[#1A2E28] dark:focus:border-primary-light dark:focus:ring-primary-light">
+                                    <option value="all">全部等級</option>
+                                    <option value="high">高風險</option>
+                                    <option value="medium">中風險</option>
+                                    <option value="low">低風險</option>
+                                </select>
+                                <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted-light dark:text-text-muted-dark text-sm">expand_more</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm font-bold text-text-primary-light dark:text-text-primary-dark">時間範圍</label>
+                            <div class="relative">
+                                <select id="history-time-filter" class="w-full h-11 px-4 rounded-lg border border-border-light bg-card-light focus:bg-white focus:border-primary-light focus:ring-1 focus:ring-primary-light outline-none appearance-none transition-all shadow-sm text-text-primary-light dark:border-border-dark dark:bg-[#1E322C] dark:text-white dark:focus:bg-[#1A2E28] dark:focus:border-primary-light dark:focus:ring-primary-light">
+                                    <option value="all">全部時間</option>
+                                    <option value="today">今天</option>
+                                    <option value="week">本週</option>
+                                    <option value="month">本月</option>
+                                    <option value="year">今年</option>
+                                </select>
+                                <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted-light dark:text-text-muted-dark text-sm">expand_more</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 歷史記錄列表 -->
+                <div class="bg-card-light rounded-xl p-6 shadow-sm border border-border-light transition-colors duration-300 dark:bg-card-dark dark:border-border-dark">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-bold text-primary-light dark:text-primary-light">評估記錄</h3>
+                        <div class="text-sm text-text-secondary-light dark:text-text-secondary-dark">
+                            <span id="history-count">0</span> 筆記錄
+                        </div>
+                    </div>
+
+                    <div id="history-list" class="space-y-4">
+                        <!-- 歷史記錄將在這裡動態生成 -->
+                        <div class="text-center py-12 text-text-muted-light dark:text-text-muted-dark">
+                            <span class="material-symbols-outlined text-5xl mb-4 opacity-50">history</span>
+                            <p class="text-lg font-medium">尚無歷史記錄</p>
+                            <p class="text-sm mt-2">開始進行客戶流失風險評估後，記錄將顯示在這裡。</p>
+                        </div>
+                    </div>
+
+                    <!-- 分頁控制 -->
+                    <div id="history-pagination" class="flex items-center justify-between mt-8 pt-6 border-t border-border-light dark:border-border-dark hidden">
+                        <div class="text-sm text-text-secondary-light dark:text-text-secondary-dark">
+                            顯示 <span id="history-start">1</span>-<span id="history-end">10</span> 筆，共 <span id="history-total">0</span> 筆
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button id="history-prev" class="px-3 py-1.5 rounded-lg border border-border-light bg-card-light text-text-secondary-light hover:bg-primary-light/5 hover:text-primary-light transition-colors dark:border-border-dark dark:bg-card-dark dark:text-text-secondary-dark disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                <span class="material-symbols-outlined text-sm">chevron_left</span>
+                            </button>
+                            <div class="flex items-center gap-1">
+                                <button class="px-3 py-1.5 rounded-lg bg-primary-light text-white text-sm">1</button>
+                            </div>
+                            <button id="history-next" class="px-3 py-1.5 rounded-lg border border-border-light bg-card-light text-text-secondary-light hover:bg-primary-light/5 hover:text-primary-light transition-colors dark:border-border-dark dark:bg-card-dark dark:text-text-secondary-dark disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                <span class="material-symbols-outlined text-sm">chevron_right</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 圖表分析頁面 (預設隱藏) -->
+        <div id="page-charts" class="page-content hidden">
+            <div class="max-w-[1400px] mx-auto">
+                <div class="bg-card-light rounded-xl p-6 shadow-sm border border-border-light transition-colors duration-300 dark:bg-card-dark dark:border-border-dark mb-8">
+                    <div class="flex items-start justify-between flex-wrap gap-4">
+                        <div>
+                            <h1 class="text-2xl font-bold text-primary-light dark:text-primary-light mb-2">圖表分析</h1>
+                            <p class="text-text-secondary-light dark:text-text-secondary-dark">視覺化分析客戶流失風險數據，洞察趨勢與模式。</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button id="refresh-charts" class="flex items-center gap-2 text-primary-light font-medium text-sm bg-primary-light/5 px-4 py-2 rounded-lg hover:bg-primary-light/10 transition-colors border border-primary-light/10 dark:text-primary-light dark:bg-primary-light/10 dark:border-primary-light/20 dark:hover:bg-primary-light/20">
+                                <span class="material-symbols-outlined text-sm">refresh</span>
+                                更新圖表
+                            </button>
+                            <button id="export-charts" class="flex items-center gap-2 text-primary-light font-medium text-sm bg-primary-light/5 px-4 py-2 rounded-lg hover:bg-primary-light/10 transition-colors border border-primary-light/10 dark:text-primary-light dark:bg-primary-light/10 dark:border-primary-light/20 dark:hover:bg-primary-light/20">
+                                <span class="material-symbols-outlined text-sm">download</span>
+                                匯出圖表
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 圖表類型選擇器 -->
+                <div class="bg-card-light rounded-xl p-6 shadow-sm border border-border-light transition-colors duration-300 dark:bg-card-dark dark:border-border-dark mb-8">
+                    <h2 class="text-lg font-bold text-text-primary-light dark:text-white mb-4">選擇圖表類型</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <button class="chart-type-btn active px-4 py-3 rounded-lg border border-primary-light bg-primary-light/10 text-primary-light font-medium transition-all hover:bg-primary-light/20 dark:border-primary-light dark:bg-primary-light/20 dark:text-primary-light" data-chart-type="risk-distribution">
+                            <span class="material-symbols-outlined text-lg mb-1 block">pie_chart</span>
+                            風險分佈
+                        </button>
+                        <button class="chart-type-btn px-4 py-3 rounded-lg border border-border-light bg-card-light text-text-secondary-light font-medium transition-all hover:bg-primary-light/5 hover:text-primary-light hover:border-primary-light/30 dark:border-border-dark dark:bg-card-dark dark:text-text-secondary-dark dark:hover:bg-primary-light/10 dark:hover:text-primary-light" data-chart-type="trend-analysis">
+                            <span class="material-symbols-outlined text-lg mb-1 block">trending_up</span>
+                            趨勢分析
+                        </button>
+                        <button class="chart-type-btn px-4 py-3 rounded-lg border border-border-light bg-card-light text-text-secondary-light font-medium transition-all hover:bg-primary-light/5 hover:text-primary-light hover:border-primary-light/30 dark:border-border-dark dark:bg-card-dark dark:text-text-secondary-dark dark:hover:bg-primary-light/10 dark:hover:text-primary-light" data-chart-type="customer-attributes">
+                            <span class="material-symbols-outlined text-lg mb-1 block">group</span>
+                            客戶屬性
+                        </button>
+                        <button class="chart-type-btn px-4 py-3 rounded-lg border border-border-light bg-card-light text-text-secondary-light font-medium transition-all hover:bg-primary-light/5 hover:text-primary-light hover:border-primary-light/30 dark:border-border-dark dark:bg-card-dark dark:text-text-secondary-dark dark:hover:bg-primary-light/10 dark:hover:text-primary-light" data-chart-type="behavior-analysis">
+                            <span class="material-symbols-outlined text-lg mb-1 block">shopping_cart</span>
+                            消費行為
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 圖表容器 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- 主要圖表 -->
+                    <div class="bg-card-light rounded-xl p-6 shadow-sm border border-border-light transition-colors duration-300 dark:bg-card-dark dark:border-border-dark">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-bold text-text-primary-light dark:text-white" id="main-chart-title">風險分佈圖</h3>
+                            <div class="flex items-center gap-2">
+                                <button class="chart-option-btn p-2 rounded-lg border border-border-light bg-card-light text-text-secondary-light hover:bg-primary-light/5 hover:text-primary-light transition-colors dark:border-border-dark dark:bg-card-dark dark:text-text-secondary-dark dark:hover:bg-primary-light/10" data-action="toggle-legend">
+                                    <span class="material-symbols-outlined text-sm">label</span>
+                                </button>
+                                <button class="chart-option-btn p-2 rounded-lg border border-border-light bg-card-light text-text-secondary-light hover:bg-primary-light/5 hover:text-primary-light transition-colors dark:border-border-dark dark:bg-card-dark dark:text-text-secondary-dark dark:hover:bg-primary-light/10" data-action="download-chart">
+                                    <span class="material-symbols-outlined text-sm">download</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-container" style="height: 350px;">
+                            <canvas id="main-chart"></canvas>
+                        </div>
+                        <div class="mt-4 text-sm text-text-secondary-light dark:text-text-secondary-dark" id="main-chart-description">
+                            顯示高、中、低風險客戶的比例分佈。
+                        </div>
+                    </div>
+
+                    <!-- 次要圖表 -->
+                    <div class="bg-card-light rounded-xl p-6 shadow-sm border border-border-light transition-colors duration-300 dark:bg-card-dark dark:border-border-dark">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-bold text-text-primary-light dark:text-white" id="secondary-chart-title">風險趨勢圖</h3>
+                            <div class="flex items-center gap-2">
+                                <button class="chart-option-btn p-2 rounded-lg border border-border-light bg-card-light text-text-secondary-light hover:bg-primary-light/5 hover:text-primary-light transition-colors dark:border-border-dark dark:bg-card-dark dark:text-text-secondary-dark dark:hover:bg-primary-light/10" data-action="toggle-grid">
+                                    <span class="material-symbols-outlined text-sm">grid_on</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-container" style="height: 350px;">
+                            <canvas id="secondary-chart"></canvas>
+                        </div>
+                        <div class="mt-4 text-sm text-text-secondary-light dark:text-text-secondary-dark" id="secondary-chart-description">
+                            顯示風險分數隨時間的變化趨勢。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 圖表數據摘要 -->
+                <div class="bg-card-light rounded-xl p-6 shadow-sm border border-border-light transition-colors duration-300 dark:bg-card-dark dark:border-border-dark mt-8">
+                    <h2 class="text-lg font-bold text-text-primary-light dark:text-white mb-4">數據摘要</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-card-light/50 rounded-lg p-4 border border-border-light dark:bg-card-dark/50 dark:border-border-dark">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">總評估次數</p>
+                                    <p class="text-2xl font-bold text-text-primary-light dark:text-white" id="total-assessments">0</p>
+                                </div>
+                                <div class="size-10 rounded-full bg-primary-light/10 flex items-center justify-center text-primary-light dark:bg-primary-light/20">
+                                    <span class="material-symbols-outlined">assessment</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-card-light/50 rounded-lg p-4 border border-border-light dark:bg-card-dark/50 dark:border-border-dark">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">平均風險分數</p>
+                                    <p class="text-2xl font-bold text-text-primary-light dark:text-white" id="average-risk-score">0%</p>
+                                </div>
+                                <div class="size-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 dark:bg-red-900/40 dark:text-red-400">
+                                    <span class="material-symbols-outlined">warning</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-card-light/50 rounded-lg p-4 border border-border-light dark:bg-card-dark/50 dark:border-border-dark">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">高風險客戶比例</p>
+                                    <p class="text-2xl font-bold text-text-primary-light dark:text-white" id="high-risk-percentage">0%</p>
+                                </div>
+                                <div class="size-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 dark:bg-orange-900/40 dark:text-orange-400">
+                                    <span class="material-symbols-outlined">priority_high</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 設定頁面 (預設隱藏) -->
+        <div id="page-settings" class="page-content hidden">
+            <div class="max-w-[1400px] mx-auto">
+                <div class="bg-card-light rounded-xl p-6 shadow-sm border border-border-light transition-colors duration-300 dark:bg-card-dark dark:border-border-dark">
+                    <h1 class="text-2xl font-bold text-primary-light dark:text-primary-light mb-2">設定</h1>
+                    <p class="text-text-secondary-light dark:text-text-secondary-dark mb-6">系統設定與偏好設定。</p>
+                    
+                    <div class="text-center py-12 text-text-muted-light dark:text-text-muted-dark">
+                        <span class="material-symbols-outlined text-5xl mb-4 opacity-50">settings</span>
+                        <p class="text-lg font-medium">設定功能開發中</p>
+                        <p class="text-sm mt-2">此功能將在未來版本中提供。</p>
                     </div>
                 </div>
             </div>

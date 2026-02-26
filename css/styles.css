@@ -243,3 +243,354 @@ input:invalid + .validation-error,
 select:invalid + .validation-error {
     display: block;
 }
+
+/* 歷史記錄頁面專用樣式 */
+.history-record-card {
+    transition: all 0.3s ease;
+    animation: slideIn 0.5s ease-out;
+}
+
+.history-record-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.dark .history-record-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 分頁按鈕樣式 */
+.page-btn {
+    min-width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.page-btn:hover:not(:disabled) {
+    background-color: #f0f9ff;
+    border-color: #0ea5e9;
+}
+
+.dark .page-btn:hover:not(:disabled) {
+    background-color: #1e3a8a;
+    border-color: #3b82f6;
+}
+
+.page-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* 歷史記錄詳細資訊彈窗 */
+.history-modal {
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 歷史記錄篩選器 */
+.history-filter {
+    transition: all 0.3s ease;
+}
+
+.history-filter:focus {
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.dark .history-filter:focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+/* 空狀態樣式 */
+.empty-state {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* 導航連結激活狀態 */
+nav a.active {
+    position: relative;
+    color: #0ea5e9;
+}
+
+nav a.active::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #0ea5e9;
+    border-radius: 1px;
+}
+
+.dark nav a.active {
+    color: #3b82f6;
+}
+
+.dark nav a.active::after {
+    background-color: #3b82f6;
+}
+
+/* 響應式調整 */
+@media (max-width: 768px) {
+    .history-record-card {
+        padding: 1rem;
+    }
+    
+    .history-filter-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .page-btn {
+        min-width: 32px;
+        height: 32px;
+        font-size: 0.875rem;
+    }
+}
+
+/* 載入動畫 */
+.history-loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #0ea5e9;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.dark .history-loading {
+    border: 2px solid #374151;
+    border-top: 2px solid #3b82f6;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 圖表頁面專用樣式 */
+.chart-container {
+    position: relative;
+    width: 100%;
+}
+
+.chart-type-btn {
+    transition: all 0.3s ease;
+}
+
+.chart-type-btn.active {
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
+}
+
+.dark .chart-type-btn.active {
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.chart-type-btn:hover:not(.active) {
+    transform: translateY(-2px);
+}
+
+.chart-option-btn {
+    transition: all 0.2s ease;
+}
+
+.chart-option-btn:hover {
+    transform: scale(1.1);
+}
+
+/* 圖表動畫 */
+.chart-fade-in {
+    animation: chartFadeIn 0.5s ease-out;
+}
+
+@keyframes chartFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 圖表工具提示 */
+.chart-tooltip {
+    background-color: white;
+    border-radius: 6px;
+    padding: 8px 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-size: 12px;
+    pointer-events: none;
+}
+
+.dark .chart-tooltip {
+    background-color: #1e293b;
+    color: white;
+}
+
+/* 響應式圖表調整 */
+@media (max-width: 1024px) {
+    .chart-container {
+        height: 300px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .chart-container {
+        height: 250px !important;
+    }
+    
+    .chart-type-btn {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    .chart-type-btn span.material-symbols-outlined {
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .chart-container {
+        height: 200px !important;
+    }
+    
+    .grid.grid-cols-1.lg\\:grid-cols-2.gap-8 {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem;
+    }
+}
+
+/* 圖表載入狀態 */
+.chart-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.dark .chart-loading {
+    color: #9ca3af;
+}
+
+/* 圖表無數據狀態 */
+.chart-no-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    color: #6b7280;
+    padding: 2rem;
+}
+
+.dark .chart-no-data {
+    color: #9ca3af;
+}
+
+.chart-no-data .material-symbols-outlined {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+/* 圖表標題樣式 */
+.chart-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #111827;
+}
+
+.dark .chart-title {
+    color: #f9fafb;
+}
+
+.chart-description {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+}
+
+.dark .chart-description {
+    color: #9ca3af;
+}
+
+/* 圖表控制項 */
+.chart-controls {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.chart-control-btn {
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+    border: 1px solid #d1d5db;
+    background-color: white;
+    color: #374151;
+}
+
+.dark .chart-control-btn {
+    border-color: #4b5563;
+    background-color: #1f2937;
+    color: #d1d5db;
+}
+
+.chart-control-btn:hover {
+    background-color: #f3f4f6;
+}
+
+.dark .chart-control-btn:hover {
+    background-color: #374151;
+}
+
+.chart-control-btn.active {
+    background-color: #0ea5e9;
+    border-color: #0ea5e9;
+    color: white;
+}
+
+.dark .chart-control-btn.active {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}

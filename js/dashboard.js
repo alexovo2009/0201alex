@@ -281,15 +281,41 @@ document.addEventListener('DOMContentLoaded', function() {
             const riskFactors = generateRiskFactors();
             renderRiskFactors(riskFactors);
             
+            // 獲取風險等級
+            const riskLevel = getRiskLevel(riskScore);
+            
+            // 獲取行動建議
+            const recommendations = getActionRecommendations(riskLevel);
+            
+            // 收集表單數據
+            const formData = {};
+            Object.keys(formInputs).forEach(key => {
+                formData[key] = formInputs[key].value;
+            });
+            
+            // 保存到歷史記錄
+            if (window.TeaInsightHistory) {
+                const assessmentData = {
+                    customerName: formInputs.customerName.value || '匿名客戶',
+                    riskScore: riskScore,
+                    riskLevel: riskLevel,
+                    factors: riskFactors,
+                    recommendations: recommendations,
+                    formData: formData
+                };
+                
+                window.TeaInsightHistory.saveAssessment(assessmentData);
+            }
+            
             // 恢復按鈕狀態
             evaluateRiskBtn.disabled = false;
             evaluateRiskBtn.innerHTML = '<span class="material-symbols-outlined">analytics</span> 評估風險';
             
             // 顯示成功通知
-            showNotification('風險評估完成！已更新風險分析', 'success');
+            showNotification('風險評估完成！已更新風險分析並保存記錄', 'success');
             
             // 滾動到風險評估區域
-            document.querySelector('.bg-card-light.rounded-xl').scrollIntoView({ 
+            document.querySelector('.bg-card-light.rounded-xl').scrollIntoView({
                 behavior: 'smooth',
                 block: 'start'
             });
@@ -479,9 +505,25 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // 根據分數獲取風險等級
+    function getRiskLevel(score) {
+        if (score >= 70) {
+            return 'high';
+        } else if (score >= 40) {
+            return 'medium';
+        } else {
+            return 'low';
+        }
+    }
+
+    // 根據風險等級獲取行動建議
+    function getActionRecommendations(riskKey) {
+        return actionRecommendationsByRisk[riskKey] || actionRecommendationsByRisk.high;
+    }
+
     // 渲染行動建議
     function renderActionRecommendations(riskKey) {
-        const recommendations = actionRecommendationsByRisk[riskKey] || actionRecommendationsByRisk.high;
+        const recommendations = getActionRecommendations(riskKey);
         const actionsContainer = document.querySelector('.space-y-4.flex-1');
         
         if (!actionsContainer) {

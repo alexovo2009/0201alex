@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圖表功能測試</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 16px;
+        }
+        .test-button:hover {
+            background: #45a049;
+        }
+        .test-button.error {
+            background: #f44336;
+        }
+        .test-result {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+            background: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+        }
+        .test-result.error {
+            border-left-color: #f44336;
+            background: #ffebee;
+        }
+        .chart-container {
+            height: 300px;
+            margin: 20px 0;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>圖表功能測試</h1>
+        
+        <div id="test-results">
+            <div class="test-result" id="test-result-1">
+                <h3>測試 1: 檢查Chart.js庫</h3>
+                <p id="test-1-result">執行中...</p>
+            </div>
+            
+            <div class="test-result" id="test-result-2">
+                <h3>測試 2: 檢查charts.js文件</h3>
+                <p id="test-2-result">執行中...</p>
+            </div>
+            
+            <div class="test-result" id="test-result-3">
+                <h3>測試 3: 檢查Canvas元素</h3>
+                <p id="test-3-result">執行中...</p>
+            </div>
+            
+            <div class="test-result" id="test-result-4">
+                <h3>測試 4: 測試圖表渲染</h3>
+                <p id="test-4-result">執行中...</p>
+                <div class="chart-container">
+                    <canvas id="test-chart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div>
+            <button class="test-button" onclick="runAllTests()">運行所有測試</button>
+            <button class="test-button" onclick="testChartJs()">測試Chart.js</button>
+            <button class="test-button" onclick="testChartsJs()">測試charts.js</button>
+            <button class="test-button" onclick="renderTestChart()">渲染測試圖表</button>
+        </div>
+        
+        <div id="debug-info" style="margin-top: 20px;">
+            <h3>調試信息</h3>
+            <pre id="debug-output"></pre>
+        </div>
+    </div>
+
+    <script>
+        let debugOutput = document.getElementById('debug-output');
+        
+        function logDebug(message) {
+            debugOutput.textContent += message + '\n';
+            console.log(message);
+        }
+        
+        function updateTestResult(testId, message, isError = false) {
+            const element = document.getElementById(`test-${testId}-result`);
+            element.textContent = message;
+            element.parentElement.className = `test-result ${isError ? 'error' : ''}`;
+        }
+        
+        function testChartJs() {
+            logDebug('測試Chart.js庫...');
+            try {
+                if (typeof Chart === 'undefined') {
+                    updateTestResult(1, '❌ Chart.js未載入', true);
+                    logDebug('錯誤: Chart.js未載入');
+                    return false;
+                }
+                
+                updateTestResult(1, '✅ Chart.js已正確載入');
+                logDebug('Chart.js版本: ' + Chart.version);
+                return true;
+            } catch (error) {
+                updateTestResult(1, '❌ Chart.js測試失敗: ' + error.message, true);
+                logDebug('錯誤: ' + error.message);
+                return false;
+            }
+        }
+        
+        function testChartsJs() {
+            logDebug('測試charts.js文件...');
+            try {
+                // 嘗試載入charts.js
+                const script = document.createElement('script');
+                script.src = 'js/charts.js';
+                script.onload = function() {
+                    if (typeof window.TeaInsightCharts !== 'undefined') {
+                        updateTestResult(2, '✅ charts.js已正確載入，找到TeaInsightCharts對象');
+                        logDebug('TeaInsightCharts對象: ' + typeof window.TeaInsightCharts);
+                    } else {
+                        updateTestResult(2, '❌ charts.js載入但未找到TeaInsightCharts對象', true);
+                        logDebug('警告: 未找到TeaInsightCharts對象');
+                    }
+                };
+                script.onerror = function() {
+                    updateTestResult(2, '❌ 無法載入charts.js文件', true);
+                    logDebug('錯誤: 無法載入js/charts.js');
+                };
+                document.head.appendChild(script);
+            } catch (error) {
+                updateTestResult(2, '❌ charts.js測試失敗: ' + error.message, true);
+                logDebug('錯誤: ' + error.message);
+            }
+        }
+        
+        function testCanvasElements() {
+            logDebug('檢查Canvas元素...');
+            try {
+                // 檢查主HTML中的Canvas元素
+                const mainCanvas = document.getElementById('main-chart');
+                const secondaryCanvas = document.getElementById('secondary-chart');
+                
+                if (!mainCanvas) {
+                    updateTestResult(3, '❌ 未找到#main-chart Canvas元素', true);
+                    logDebug('錯誤: 未找到#main-chart元素');
+                    return false;
+                }
+                
+                if (!secondaryCanvas) {
+                    updateTestResult(3, '⚠️ 未找到#secondary-chart Canvas元素', false);
+                    logDebug('警告: 未找到#secondary-chart元素');
+                } else {
+                    updateTestResult(3, '✅ 找到Canvas元素');
+                    logDebug('找到#main-chart和#secondary-chart元素');
+                }
+                
+                return true;
+            } catch (error) {
+                updateTestResult(3, '❌ Canvas測試失敗: ' + error.message, true);
+                logDebug('錯誤: ' + error.message);
+                return false;
+            }
+        }
+        
+        function renderTestChart() {
+            logDebug('渲染測試圖表...');
+            try {
+                const ctx = document.getElementById('test-chart').getContext('2d');
+                
+                // 創建簡單的測試圖表
+                const testChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['測試1', '測試2', '測試3', '測試4'],
+                        datasets: [{
+                            label: '測試數據',
+                            data: [12, 19, 3, 5],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+                
+                updateTestResult(4, '✅ 測試圖表渲染成功');
+                logDebug('測試圖表創建成功，類型: ' + testChart.config.type);
+                return true;
+            } catch (error) {
+                updateTestResult(4, '❌ 測試圖表渲染失敗: ' + error.message, true);
+                logDebug('錯誤: ' + error.message);
+                logDebug('錯誤堆棧: ' + error.stack);
+                return false;
+            }
+        }
+        
+        function runAllTests() {
+            logDebug('開始運行所有測試...');
+            debugOutput.textContent = '';
+            
+            // 運行測試
+            const test1 = testChartJs();
+            if (test1) {
+                setTimeout(() => {
+                    testChartsJs();
+                    setTimeout(() => {
+                        testCanvasElements();
+                        setTimeout(() => {
+                            renderTestChart();
+                            logDebug('所有測試完成');
+                        }, 500);
+                    }, 500);
+                }, 500);
+            }
+        }
+        
+        // 頁面載入時自動運行基本測試
+        window.addEventListener('DOMContentLoaded', function() {
+            logDebug('頁面載入完成，開始基本測試...');
+            testChartJs();
+            setTimeout(testCanvasElements, 300);
+        });
+    </script>
+</body>
+</html>
